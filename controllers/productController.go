@@ -56,7 +56,7 @@ func UpdateProduct(c *gin.Context) {
 			})
 		return
 	}
-	
+
 	if err := c.ShouldBindJSON(&Product); err != nil{
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -74,6 +74,14 @@ func UpdateProduct(c *gin.Context) {
 			"message": "Bad Request",
 			"error":   err.Error(),
 		})
+		return
+	}
+	err2 := db.First(&Product, productID).Error
+	if err2 != nil {
+		c.AbortWithError(http.StatusInternalServerError, err2)
+		c.AbortWithStatusJSON(http.StatusNotFound,gin.H{
+			"error_message": fmt.Sprintf("Product with id %v not found", productID),
+			})
 		return
 	}
 	c.JSON(http.StatusOK, Product)
