@@ -68,7 +68,7 @@ func UserLogin (c *gin.Context){
 		return
 	}
 
-	token, err := helpers.GenerateToken(User.ID, User.Email)
+	token, err := helpers.GenerateToken(User.ID, User.Email, User.Role)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return

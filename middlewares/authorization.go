@@ -13,7 +13,7 @@ import (
 func ProductAuthorization() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		db := database.GetDB()
-		productId, err := strconv.Atoi(c.Param("productId"))
+		productID, err := strconv.Atoi(c.Param("productID"))
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"error" : "Bad Request",
@@ -26,7 +26,7 @@ func ProductAuthorization() gin.HandlerFunc {
 		userRole := string(userData["role"].(string))
 		Product := models.Product{}
 
-		err = db.Select("user_id").First(&Product,uint(productId)).Error
+		err = db.Select("user_id").First(&Product,uint(productID)).Error
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 				"error" : "Data Not Found",

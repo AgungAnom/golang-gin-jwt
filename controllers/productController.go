@@ -43,7 +43,7 @@ func UpdateProduct(c *gin.Context) {
 	db := database.GetDB()
 	contentType := helpers.GetContentType(c)
 	Product := models.Product{}
-	productId, _ := strconv.Atoi(c.Param("productId"))
+	productID, _ := strconv.Atoi(c.Param("productID"))
 	userID := uint(userData["id"].(float64))
 
 	if contentType == appJSON {
@@ -52,11 +52,15 @@ func UpdateProduct(c *gin.Context) {
 		c.ShouldBind(&Product)
 	}
 
-	Product.ID = uint(productId)
+	
 	Product.UserID = userID
 	
+	Product = models.Product{
+		Title: Product.Title,
+		Description: Product.Description,
+	}
 
-	err := db.Model(&Product).Where("id = ?", productId).Updates(models.Product{Title: Product.Title, Description: Product.Description}).Error
+	err := db.Model(&Product).Where("id = ?", productID).Updates(Product).Error
 	if err != nil{
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Bad Request",
@@ -68,15 +72,15 @@ func UpdateProduct(c *gin.Context) {
 }
 
 func GetProduct(c *gin.Context){
-	productId, _ := strconv.Atoi(c.Param("productId"))
+	productID, _ := strconv.Atoi(c.Param("productID"))
 	Product := models.Product{}
 	db := database.GetDB()
 
-	err := db.First(&Product, productId).Error
+	err := db.First(&Product, productID).Error
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		c.AbortWithStatusJSON(http.StatusNotFound,gin.H{
-			"error_message": fmt.Sprintf("Product with id %v not found", productId),
+			"error_message": fmt.Sprintf("Product with id %v not found", productID),
 			})
 		return
 	}
@@ -84,15 +88,15 @@ func GetProduct(c *gin.Context){
 }
 
 func DeleteProduct(c *gin.Context){
-	productId, _ := strconv.Atoi(c.Param("productId"))
+	productID, _ := strconv.Atoi(c.Param("productID"))
 	Product := models.Product{}
 	db := database.GetDB()
 
-	err := db.First(&Product, productId).Error
+	err := db.First(&Product, productID).Error
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		c.AbortWithStatusJSON(http.StatusNotFound,gin.H{
-			"error_message": fmt.Sprintf("Product with id %v not found", productId),
+			"error_message": fmt.Sprintf("Product with id %v not found", productID),
 			})
 		return
 	}
