@@ -41,20 +41,28 @@ func CreateProduct(c *gin.Context) {
 func UpdateProduct(c *gin.Context) {
 	userData := c.MustGet("userData").(jwt.MapClaims)
 	db := database.GetDB()
-	contentType := helpers.GetContentType(c)
+	OldProduct := models.Product{}
 	Product := models.Product{}
 	productID, _ := strconv.Atoi(c.Param("productID"))
 	userID := uint(userData["id"].(float64))
 
-	if contentType == appJSON {
-		c.ShouldBindJSON(&Product)
-	} else {
-		c.ShouldBind(&Product)
-	}
 
+
+	err1 := db.First(&OldProduct, productID).Error
+	if err1 != nil {
+		c.AbortWithError(http.StatusInternalServerError, err1)
+		c.AbortWithStatusJSON(http.StatusNotFound,gin.H{
+			"error_message": fmt.Sprintf("Product with id %v not found", productID),
+			})
+		return
+	}
 	
+	if err := c.ShouldBindJSON(&Product); err != nil{
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
 	Product.UserID = userID
-	
+	Product.ID = uint(productID)
 	Product = models.Product{
 		Title: Product.Title,
 		Description: Product.Description,
@@ -84,7 +92,7 @@ func GetProduct(c *gin.Context){
 			})
 		return
 	}
-	c.JSON(http.StatusOK, Product)	
+	c.JSON(http.StatusOK, Product)
 }
 
 func DeleteProduct(c *gin.Context){
