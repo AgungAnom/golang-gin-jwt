@@ -97,7 +97,7 @@ func TestProductServiceGetAllProductNotFound(t *testing.T){
 		UserID : 4,
 		},
 	}
-	for i, _ := range data {
+	for i := range data {
 	productRepository.Mock.On("FindByID", i+6).Return(nil)
 	product, err := productService.GetOneProduct(i+6)
 	assert.Nil(t, product)
