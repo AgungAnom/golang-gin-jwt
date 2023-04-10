@@ -45,3 +45,19 @@ func ProductAuthorization() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+
+func ProductDeleteAuthorization() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userData := c.MustGet("userData").(jwt.MapClaims)
+		userRole := string(userData["role"].(string))
+		if userRole != "admin"{
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+				"error" : "Unauthorized",
+				"message" : "You are not allowed to delete this data",
+			})
+			return
+		}
+		c.Next()
+	}
+}
